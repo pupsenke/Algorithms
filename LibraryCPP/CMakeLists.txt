@@ -1,3 +1,3 @@
-﻿add_library(LibraryCPP STATIC array.cpp )
+﻿add_library(LibraryCPP STATIC list.cpp list.h stack.cpp stack.h)
 
 add_subdirectory(Tests)
