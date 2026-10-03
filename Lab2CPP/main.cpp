@@ -40,16 +40,18 @@ bool parse_value(const string& text, const int registers[], int& value)
 
 bool get_item(Stack* values, Stack* types, ProcessorItem& item)
 {
-    if (stack_empty(values) || stack_empty(types)) return false;
+    if (stack_empty(values) || stack_empty(types))
+    {
+        return false;
+    }
+
     item.value = stack_get(values);
     item.return_address = stack_get(types) != 0;
-    return true;
-}
 
-void remove_item(Stack* values, Stack* types)
-{
     stack_pop(values);
     stack_pop(types);
+
+    return true;
 }
 
 void put_item(Stack* values, Stack* types, int value, bool return_address)
@@ -73,12 +75,6 @@ int main(int argc, char* argv[])
         }
         input = &input_file;
     }
-    vector<string> lines;
-    string line;
-    while (getline(*input, line))
-    {
-        lines.push_back(line);
-    }
 
     Stack* values = stack_create();
     Stack* types = stack_create();
@@ -86,9 +82,10 @@ int main(int argc, char* argv[])
     int registers[4] = { 0, 0, 0, 0 };
     int instruction = 0;
 
-    while (instruction >= 0 && instruction < static_cast<int>(lines.size()))
+    string line;
+    while (getline(*input, line))
     {
-        istringstream stream(lines[instruction]);
+        istringstream stream(line);
         string command;
 
         if (!(stream >> command))
@@ -162,7 +159,6 @@ int main(int argc, char* argv[])
             }
 
             registers[index] = item.value;
-            remove_item(values, types);
             ++instruction;
         }
         else if (command == "add" || command == "sub" || command == "mul")
@@ -186,7 +182,6 @@ int main(int argc, char* argv[])
                 stack_delete(types);
                 return 0;
             }
-            remove_item(values, types);
 
             if (!get_item(values, types, second) || second.return_address)
             {
@@ -195,7 +190,6 @@ int main(int argc, char* argv[])
                 stack_delete(types);
                 return 0;
             }
-            remove_item(values, types);
 
             int result = 0;
             if (command == "add")
@@ -242,7 +236,6 @@ int main(int argc, char* argv[])
                 return 0;
             }
 
-            remove_item(values, types);
             instruction = item.value + 1;
         }
         else
